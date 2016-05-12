@@ -5,7 +5,9 @@ static VALUE mRbRDMA;
 
 struct rdma_context {
   struct ibv_device **devices;
+  struct ibv_device *device;
   struct ibv_context *context;
+  
 };
 
 static void
@@ -41,13 +43,36 @@ static const rb_data_type_t rdma_context_type = {
   RUBY_TYPED_FREE_IMMEDIATELY  
 };
 
-VALUE rdma_context_open(VALUE args){
+VALUE rdma_context_open(VALUE self,VALUE dev){
   VALUE obj;
   int i;
+  char *dev_name;
+  int num_dev;
+  
+
   struct rdma_context *sval = ALLOC(struct rdma_context);
+  dev_name = StringValuePtr(dev);
+  
   
   obj = TypedData_Wrap_Struct(klass, &rdma_context_type, sval);
-  sval->devices = ibv_get_device_list(&i);
+  sval->devices = ibv_get_device_list(&num_dev);
+  sval->device = NULL;
+
+  for( i = 0 ; i < num_dev ; i++ ){
+    printf("%s\n",sval->devices[i]->name);
+    if( strncmp(sval->devices[i]->name,dev_name,strlen(dev_name)) == 0 ){
+      sval->device = sval->devices[i];
+      
+      break;
+    }
+  }
+  if( sval->device == NULL ){
+    // TODO error
+    printf("no device *\n");
+  } else {
+    printf("open device %s\n",sval->device->name);
+    sval->context = ibv_open_device(sval->device);
+  }
 
   return obj;
 }
