@@ -4,3 +4,4 @@
 #include <infiniband/umad_types.h>
 #include <infiniband/umad_sa.h>
 
+extern VALUE mRbRDMA;

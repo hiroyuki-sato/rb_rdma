@@ -1,7 +1,7 @@
 #include "rb_rdma.h"
 
-static VALUE klass;
-static VALUE mRbRDMA;
+VALUE cContext;
+//static VALUE mRbRDMA;
 
 struct rdma_context {
   struct ibv_device **devices;
@@ -32,7 +32,7 @@ memsize_rdma_context(const void *p){
 };
 
 
-static const rb_data_type_t rdma_context_type = {
+const rb_data_type_t rdma_context_type = {
   "rbma_context",
   {
     0, 
@@ -54,7 +54,7 @@ VALUE rdma_context_open(VALUE self,VALUE dev){
   dev_name = StringValuePtr(dev);
   
   
-  obj = TypedData_Wrap_Struct(klass, &rdma_context_type, sval);
+  obj = TypedData_Wrap_Struct(cContext, &rdma_context_type, sval);
   sval->devices = ibv_get_device_list(&num_dev);
   sval->device = NULL;
 
@@ -78,18 +78,12 @@ VALUE rdma_context_open(VALUE self,VALUE dev){
 }
 
 void Init_context(){
-//  VALUE klass;
-//  VALUE mRbRDMA;
 
-  mRbRDMA = rb_define_module("RbRDMA");
-
-  klass = rb_define_class_under(mRbRDMA, "Context", rb_cObject);
-  rb_define_singleton_method(klass, "open", rdma_context_open, 1);
+  cContext = rb_define_class_under(mRbRDMA, "Context", rb_cObject);
+  rb_define_singleton_method(cContext, "open", rdma_context_open, 1);
 
   // http://d.hatena.ne.jp/tueda_wolf/20091230/p1
-//  rb_define_alloc_func(klass, ruby_Object3D_allocate);
+//  rb_define_alloc_func(cContext, ruby_Object3D_allocate);
 //  rb_define_private_method (rb_cObject3D, "initialize",     (VALUE(*)(...))ruby_Object3D_initialize,                0);
-
-
 
 }
