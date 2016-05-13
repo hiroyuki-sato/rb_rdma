@@ -1,6 +1,7 @@
 #include "rb_rdma.h"
 #include "context.h"
 #include "device.h"
+#include "comp_channel.h"
 
 VALUE mRbRDMA = Qnil;
 
@@ -378,4 +379,5 @@ void Init_rb_rdma(){
 
   Init_context();
   Init_device();
+  Init_comp_channel();
 }
