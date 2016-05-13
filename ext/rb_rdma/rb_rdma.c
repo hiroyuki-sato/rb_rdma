@@ -3,6 +3,7 @@
 #include "device.h"
 #include "comp_channel.h"
 #include "pd.h"
+#include "mr.h"
 
 VALUE mRbRDMA = Qnil;
 
@@ -382,4 +383,9 @@ void Init_rb_rdma(){
   Init_device();
   Init_comp_channel();
   Init_pd();
+  Init_mr();
+
+// temporary
+    rb_const_set(mRbRDMA, rb_intern("ACCESS_LOCAL_WRITE"), INT2FIX(IBV_ACCESS_LOCAL_WRITE)); 
+
 }

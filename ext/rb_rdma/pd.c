@@ -1,7 +1,7 @@
 #include "rb_rdma.h"
 #include "context.h"
 
-static VALUE cPD;
+VALUE cPD;
 
 static size_t
 memsize_rdma_pd(const void *p){
@@ -16,7 +16,7 @@ free_rdma_pd(void *ptr){
   ibv_dealloc_pd(pd);
 };
 
-static const rb_data_type_t rdma_pd_type = {
+const rb_data_type_t rdma_pd_type = {
   "rdma_pd",
   {
     0, 
