@@ -8,11 +8,18 @@ memsize_rdma_comp_channel(const void *p){
   return sizeof(struct ibv_comp_channel);
 };
 
+static void
+free_rdma_comp_channel(void *ptr){
+  struct ibv_comp_channel *c_channel = ptr;
+
+  xfree(c_channel);
+};
+
 static const rb_data_type_t rdma_comp_channel_type = {
   "rdma_comp_channel",
   {
     0, 
-    0,
+    free_rdma_comp_channel,
     memsize_rdma_comp_channel
   },
   0,0,
@@ -26,6 +33,7 @@ comp_channel_s_alloc(VALUE klass){
   obj = TypedData_Wrap_Struct(klass,&rdma_comp_channel_type,c_channel);
   return obj;
 }
+
 
 static VALUE
 rdma_comp_channel_initialize(VALUE obj, VALUE obj_ctx){
