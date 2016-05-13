@@ -33,7 +33,7 @@ memsize_rdma_context(const void *p){
 
 
 const rb_data_type_t rdma_context_type = {
-  "rbma_context",
+  "rdma_context",
   {
     0, 
     free_rdma_context,
@@ -79,7 +79,8 @@ VALUE rdma_context_open(VALUE self,VALUE dev){
 
 void Init_context(){
 
-  cContext = rb_define_class_under(mRbRDMA, "Context", rb_cObject);
+//  cContext = rb_define_class_under(mRbRDMA, "Context", rb_cObject);
+  cContext = rb_define_class_under(mRbRDMA, "Context", rb_cData);
   rb_define_singleton_method(cContext, "open", rdma_context_open, 1);
 
   // http://d.hatena.ne.jp/tueda_wolf/20091230/p1
