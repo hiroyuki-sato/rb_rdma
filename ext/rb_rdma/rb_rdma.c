@@ -4,6 +4,7 @@
 #include "comp_channel.h"
 #include "pd.h"
 #include "mr.h"
+#include "cq.h"
 
 VALUE mRbRDMA = Qnil;
 
@@ -384,6 +385,7 @@ void Init_rb_rdma(){
   Init_comp_channel();
   Init_pd();
   Init_mr();
+  Init_cq();
 
 // temporary
     rb_const_set(mRbRDMA, rb_intern("ACCESS_LOCAL_WRITE"), INT2FIX(IBV_ACCESS_LOCAL_WRITE)); 

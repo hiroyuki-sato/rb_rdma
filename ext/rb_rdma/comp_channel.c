@@ -1,7 +1,7 @@
 #include "rb_rdma.h"
 #include "context.h"
 
-static VALUE cCompChannel;
+VALUE cCompChannel;
 
 static size_t
 memsize_rdma_comp_channel(const void *p){
@@ -15,7 +15,7 @@ free_rdma_comp_channel(void *ptr){
   xfree(c_channel);
 };
 
-static const rb_data_type_t rdma_comp_channel_type = {
+const rb_data_type_t rdma_comp_channel_type = {
   "rdma_comp_channel",
   {
     0, 
