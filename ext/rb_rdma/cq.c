@@ -2,7 +2,7 @@
 #include "context.h"
 #include "comp_channel.h"
 
-static VALUE cCQ;
+VALUE cCQ;
 
 static size_t
 memsize_rdma_cq(const void *p){
@@ -16,7 +16,7 @@ free_rdma_cq(void *ptr){
   ibv_destroy_cq(cq);
 };
 
-static const rb_data_type_t rdma_cq_type = {
+const rb_data_type_t rdma_cq_type = {
   "rdma_cq",
   {
     0, 
