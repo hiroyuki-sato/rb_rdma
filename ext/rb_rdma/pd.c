@@ -47,12 +47,13 @@ rdma_pd_initialize(VALUE obj, VALUE obj_ctx){
 
   pd = ibv_alloc_pd(ctx->context);
   if(!pd){
+    rb_exc_raise(rb_syserr_new(errno, "pd alloc fail"));
     // TODO ERROR
   }
 
   DATA_PTR(obj) = pd;
 
-  printf("%p\n",pd);
+  printf("pd: %p\n",pd);
 
   return obj;
 }
