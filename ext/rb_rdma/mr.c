@@ -53,6 +53,7 @@ rdma_mr_initialize(VALUE obj,VALUE obj_pd,VALUE obj_buf,VALUE obj_size,VALUE obj
 
   mr = ibv_reg_mr(pd,buf,size,access_flag);
   if(!mr){
+     rb_exc_raise(rb_syserr_new(errno, "mr reg fail"));
     // TODO ERROR
   }
   DATA_PTR(obj) = mr;
