@@ -47,8 +47,10 @@ rdma_comp_channel_initialize(VALUE obj, VALUE obj_ctx){
 
   c_channel = ibv_create_comp_channel(ctx->context);
   if(!c_channel){
+     rb_exc_raise(rb_syserr_new(errno, "comp_channel alloc fail"));
     // TODO ERROR
   }
+  DATA_PTR(obj) = c_channel;
 
   return obj;
 }
