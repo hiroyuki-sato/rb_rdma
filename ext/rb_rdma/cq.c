@@ -36,8 +36,8 @@ cq_s_alloc(VALUE klass){
 
 
 static VALUE
-rdma_cq_initialize(VALUE self,VALUE obj_ctx,VALUE obj_cqe,VALUE obj_c_channel,
-                   VALUE obj_comp_vector){
+rdma_cq_initialize(VALUE self,VALUE obj_ctx,VALUE obj_cqe,VALUE obj_cq_context,
+                   VALUE obj_c_channel, VALUE obj_comp_vector){
   struct ibv_cq *cq;
   struct ibv_comp_channel *c_channel;
   struct rdma_context *ctx;
