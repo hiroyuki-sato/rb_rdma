@@ -52,7 +52,11 @@ rdma_cq_initialize(VALUE self,VALUE obj_ctx,VALUE obj_cqe,VALUE obj_cq_context,
   TypedData_Get_Struct(self,struct ibv_cq,&rdma_cq_type,cq);
 
   cq = ibv_create_cq(ctx->context,cqe,NULL,c_channel,0);
+//  cq = ibv_create_cq(ctx->context,cqe,NULL,NULL,0);
   if(!cq){
+     printf("cq alloc error\n");
+     rb_exc_raise(rb_syserr_new(errno, "cq alloc fail"));
+//     rb_syserr_new(errno,"test");
     // TODO ERROR
   }
   DATA_PTR(self) = cq;
