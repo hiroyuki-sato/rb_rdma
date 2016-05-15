@@ -5,6 +5,7 @@
 #include "pd.h"
 #include "mr.h"
 #include "cq.h"
+#include "qp.h"
 
 VALUE mRbRDMA = Qnil;
 
@@ -386,8 +387,11 @@ void Init_rb_rdma(){
   Init_pd();
   Init_mr();
   Init_cq();
+  Init_qp();
 
 // temporary
     rb_const_set(mRbRDMA, rb_intern("ACCESS_LOCAL_WRITE"), INT2FIX(IBV_ACCESS_LOCAL_WRITE)); 
+    rb_const_set(mRbRDMA, rb_intern("QPT_RC"), INT2FIX(IBV_QPT_RC)); 
+
 
 }
