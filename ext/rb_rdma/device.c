@@ -11,6 +11,7 @@ memsize_rdma_device(const void *p){
 static void
 free_rdma_device(void *ptr){
   struct ibv_device_attr *attr = ptr;
+  printf("-----free called\n");
 
   xfree(attr);
 };
@@ -53,16 +54,25 @@ rdma_device_initialize(VALUE obj, VALUE obj_ctx){
   return obj;
 }
 
-static VALUE
-rdma_device_fw_ver(VALUE self){
-
+static struct ibv_device_attr *
+get_device_attr(VALUE self){
   struct ibv_device_attr *attr;
-  
   TypedData_Get_Struct(self,struct ibv_device_attr,&rdma_device_type,attr);
 
-  printf("%s\n",attr->fw_ver);
+  return attr;
+}
 
-  return self;
+static VALUE
+device_attr_fw_ver(VALUE self){
+  printf("%p\n",get_device_attr(self));
+
+  return rb_str_new2(get_device_attr(self)->fw_ver);
+}
+
+static VALUE
+device_attr_max_qp(VALUE self){
+  printf("%p\n",get_device_attr(self));
+  return INT2NUM(get_device_attr(self)->max_qp);
 }
 
 void Init_device(){
@@ -70,6 +80,8 @@ void Init_device(){
   cDevice = rb_define_class_under(mRbRDMA, "Device", rb_cData);
   rb_define_alloc_func(cDevice, device_s_alloc);
   rb_define_method(cDevice,"initialize", rdma_device_initialize,1);
-  rb_define_method(cDevice,"fw_ver", rdma_device_fw_ver,0);
+  rb_define_method(cDevice,"fw_ver", device_attr_fw_ver,0);
+
+  rb_define_method(cDevice,"max_qp", device_attr_max_qp,0);
 
 }
