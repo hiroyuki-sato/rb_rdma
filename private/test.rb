@@ -9,4 +9,5 @@ pp mr
 
 cq = RbRDMA::CQ.new(ctx,1,nil,c_channel,0)
 qp = RbRDMA::QP.new(pd,RbRDMA::QPT_RC,cq,cq,"d")
-pp qp
+puts qp.qp_state
+#pp qp

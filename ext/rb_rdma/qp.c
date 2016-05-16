@@ -18,8 +18,8 @@ static void
 free_rdma_qp(void *ptr){
   struct rdma_qp *qp = ptr;
 
-//  ibv_destroy_qp(qp->qp);
-//  xfree(qp->init_attr);
+  ibv_destroy_qp(qp->qp);
+  xfree(qp->init_attr);
   xfree(qp);
 };
 
@@ -44,6 +44,13 @@ qp_s_alloc(VALUE klass){
    
   obj = TypedData_Wrap_Struct(klass,&rdma_qp_type,qp);
   return obj;
+}
+
+static int
+get_qp_attr(VALUE self,enum ibv_qp_attr_mask attr_mask,struct ibv_qp_attr *attr){
+  struct rdma_qp *qp;
+  TypedData_Get_Struct(self,struct rdma_qp,&rdma_qp_type,qp);
+  return ibv_query_qp(qp->qp,attr,attr_mask,qp->init_attr);
 }
 
 /*
@@ -142,13 +149,25 @@ printf("test2\n");
 static VALUE
 attr_qp_state(VALUE self){
   struct ibv_qp_attr attr;
-  struct ibv_qp *qp;
+  struct rdma_qp *qp;
   
-  TypedData_Get_Struct(self,struct ibv_qp,&rdma_qp_type,qp);
-  ibv_query_qp(qp,&attr,
-  
+  TypedData_Get_Struct(self,struct rdma_qp,&rdma_qp_type,qp);
+  ibv_query_qp(qp->qp,&attr,IBV_QP_STATE,qp->init_attr);
+
+  return INT2NUM(attr.qp_state);
 }
 */
+
+static VALUE
+attr_qp_state(VALUE self){
+  struct ibv_qp_attr attr;
+  int ret;
+  ret = get_qp_attr(self,IBV_QP_STATE,&attr);
+  if( ret != 0 ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2NUM(attr.qp_state);
+}
 
 void Init_qp(){
 
@@ -156,6 +175,7 @@ void Init_qp(){
   rb_define_alloc_func(cQP, qp_s_alloc);
 //  rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
   rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
+  rb_define_method(cQP,"qp_state", attr_qp_state,0);
 
 }
 
