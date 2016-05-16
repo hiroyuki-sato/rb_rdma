@@ -3,23 +3,37 @@
 
 static VALUE cDevice;
 
+struct rb_rdma_data_device {
+  VALUE context;
+  struct ibv_device_attr *attr;
+};
+
 static size_t
 memsize_rdma_device(const void *p){
-  return sizeof(struct ibv_device_attr);
+  return sizeof(struct rb_rdma_data_device);
 };
 
 static void
 free_rdma_device(void *ptr){
-  struct ibv_device_attr *attr = ptr;
+  struct rb_rdma_data_device *data_device = ptr;
+
   printf("-----free called\n");
 
-  xfree(attr);
+  xfree(data_device);
 };
+
+static void
+mark_rdma_device(void *ptr){
+  struct rb_rdma_data_device *data_device = ptr;
+  
+  printf("mark called\n");
+  rb_gc_mark(data_device->context);
+}
 
 static const rb_data_type_t rdma_device_type = {
   "rdma_device",
   {
-    0, 
+    mark_rdma_device, 
     free_rdma_device,
     memsize_rdma_device
   },
@@ -31,35 +45,35 @@ static VALUE
 device_s_alloc(VALUE klass){
   VALUE obj;
   struct ibv_device_attr *attr = ALLOC(struct ibv_device_attr);
-  obj = TypedData_Wrap_Struct(klass,&rdma_device_type,attr);
+  struct rb_rdma_data_device *data_device = ALLOC(struct rb_rdma_data_device);
+  obj = TypedData_Wrap_Struct(klass,&rdma_device_type,data_device);
+  data_device->attr = attr;
   return obj;
 }
 
 static VALUE
-rdma_device_initialize(VALUE obj, VALUE obj_ctx){
-
-//  VALUE obj;
+rdma_device_initialize(VALUE obj, VALUE rb_ctx){
 
   struct rdma_context *ctx;
-//  struct ibv_device_attr *attr = ALLOC(struct ibv_device_attr);
-  struct ibv_device_attr *attr = NULL;
+//  struct ibv_device_attr *attr = NULL;
+  struct rb_rdma_data_device *data_device;
   
-  TypedData_Get_Struct(obj_ctx,struct rdma_context,&rdma_context_type,ctx);
-//  obj = TypedData_Wrap_Struct(cDevice, &rdma_device_type, attr);
+  TypedData_Get_Struct(rb_ctx,struct rdma_context,&rdma_context_type,ctx);
 
-  TypedData_Get_Struct(obj,struct ibv_device_attr,&rdma_device_type,attr);
+  TypedData_Get_Struct(obj,struct rb_rdma_data_device,&rdma_device_type,data_device);
 
-  ibv_query_device(ctx->context,attr);
+  ibv_query_device(ctx->context,data_device->attr);
+  data_device->context = rb_ctx;
 
   return obj;
 }
 
 static struct ibv_device_attr *
 get_device_attr(VALUE self){
-  struct ibv_device_attr *attr;
-  TypedData_Get_Struct(self,struct ibv_device_attr,&rdma_device_type,attr);
+  struct rb_rdma_data_device *data_device;
+  TypedData_Get_Struct(self,struct rb_rdma_data_device,&rdma_device_type,data_device);
 
-  return attr;
+  return data_device->attr;
 }
 
 static VALUE
