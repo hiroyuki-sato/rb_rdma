@@ -140,6 +140,23 @@ printf("test2\n");
   }
 //  DATA_PTR(self) = qp;
 
+  { 
+    struct ibv_qp_attr attr = {
+      .qp_state        = IBV_QPS_INIT,
+      .pkey_index      = 0,
+      .port_num        = 1, /* TODO */
+      .qp_access_flags = 0
+    };
+
+    if(ibv_modify_qp(qp->qp,&attr,
+                     IBV_QP_STATE   |
+                     IBV_QP_PKEY_INDEX |
+                     IBV_QP_PORT    |
+                     IBV_QP_ACCESS_FLAGS)){
+      rb_exc_raise(rb_syserr_new(errno, "Failed to modify QP to INIT"));
+    }
+  }
+
   return self;
 }
 
