@@ -66,7 +66,7 @@ rdma_context_open(int argc,VALUE *argv,VALUE self){
       port_num  = NUM2INT(rb_port_num);
       break;
     default:
-      rb_raise(rb_eRuntimeError, "invalid port_number");
+      rb_raise(rb_eArgError, "Invalid port_num argument");
   }    
   
   obj = TypedData_Wrap_Struct(cContext, &rdma_context_type, sval);
