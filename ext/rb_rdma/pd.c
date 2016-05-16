@@ -3,6 +3,11 @@
 
 VALUE cPD;
 
+struct rb_rdma_data_pd {
+  VALUE context;
+  struct ibv_pd *pd;
+};
+
 static size_t
 memsize_rdma_pd(const void *p){
   return sizeof(struct ibv_pd *);
@@ -10,16 +15,26 @@ memsize_rdma_pd(const void *p){
 
 static void
 free_rdma_pd(void *ptr){
-  struct ibv_pd *pd = ptr;
-  printf("%p\n",pd);
+  struct rb_rdma_data_pd *data_pd = ptr;
+  printf("%p\n",data_pd->pd);
 
-  ibv_dealloc_pd(pd);
+  ibv_dealloc_pd(data_pd->pd);
+  xfree(data_pd);
 };
+
+static void
+mark_rdma_pd(void *ptr){
+  struct rb_rdma_data_pd *data_pd = ptr;
+
+  rb_gc_mark(data_pd->context);
+
+}
+
 
 const rb_data_type_t rdma_pd_type = {
   "rdma_pd",
   {
-    0, 
+    mark_rdma_pd, 
     free_rdma_pd,
     memsize_rdma_pd
   },
@@ -29,33 +44,31 @@ const rb_data_type_t rdma_pd_type = {
 
 static VALUE
 pd_s_alloc(VALUE klass){
-  VALUE obj;
-  obj = TypedData_Wrap_Struct(klass,&rdma_pd_type,0);
-  return obj;
+  VALUE self;
+  struct rb_rdma_data_pd *data_pd = ALLOC(struct rb_rdma_data_pd);
+  self = TypedData_Wrap_Struct(klass,&rdma_pd_type,data_pd);
+  return self;
 }
 
 
 static VALUE
-rdma_pd_initialize(VALUE obj, VALUE obj_ctx){
+rdma_pd_initialize(VALUE self, VALUE rb_ctx){
 
   struct rdma_context *ctx;
-  struct ibv_pd *pd;
+  struct rb_rdma_data_pd *data_pd;
   
-  TypedData_Get_Struct(obj_ctx,struct rdma_context,&rdma_context_type,ctx);
+  TypedData_Get_Struct(rb_ctx,struct rdma_context,&rdma_context_type,ctx);
 
-  TypedData_Get_Struct(obj,struct ibv_pd,&rdma_pd_type,pd);
+  TypedData_Get_Struct(self,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
 
-  pd = ibv_alloc_pd(ctx->context);
-  if(!pd){
+  data_pd->context = rb_ctx;
+  data_pd->pd = ibv_alloc_pd(ctx->context);
+  if(!data_pd->pd){
     rb_exc_raise(rb_syserr_new(errno, "pd alloc fail"));
     // TODO ERROR
   }
 
-  DATA_PTR(obj) = pd;
-
-  printf("pd: %p\n",pd);
-
-  return obj;
+  return self;
 }
 
 void Init_pd(){
