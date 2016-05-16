@@ -4,22 +4,35 @@
 
 static VALUE cMR;
 
+struct rb_rdma_data_mr {
+  VALUE pd;
+  struct ibv_mr *mr;
+};
+
 static size_t
 memsize_rdma_mr(const void *p){
-  return sizeof(struct ibv_mr *);
+  return sizeof(struct rb_rdma_data_mr);
 };
 
 static void
 free_rdma_mr(void *ptr){
-  struct ibv_mr *mr = ptr;
+  struct rb_rdma_data_mr *data_mr = ptr;
 
-  ibv_dereg_mr(mr);
+  ibv_dereg_mr(data_mr->mr);
+  xfree(data_mr);
 };
+
+static void
+mark_rdma_mr(void *ptr){
+  struct rb_rdma_data_mr *data_mr = ptr;
+
+  rb_mark_gc(data_mr->pd);
+}
 
 static const rb_data_type_t rdma_mr_type = {
   "rdma_mr",
   {
-    0, 
+    mark_rdma_mr, 
     free_rdma_mr,
     memsize_rdma_mr
   },
@@ -29,36 +42,37 @@ static const rb_data_type_t rdma_mr_type = {
 
 static VALUE
 mr_s_alloc(VALUE klass){
-  VALUE obj;
-  obj = TypedData_Wrap_Struct(klass,&rdma_mr_type,0);
-  return obj;
+  VALUE self;
+  struct rb_rdma_data_mr *data_mr = ALLOC(struct rb_rdma_data_mr);
+  self = TypedData_Wrap_Struct(klass,&rdma_mr_type,data_mr);
+  return self;
 }
 
 
 static VALUE
-rdma_mr_initialize(VALUE obj,VALUE obj_pd,VALUE obj_buf,VALUE obj_size,VALUE obj_flag){
-  struct ibv_mr *mr;
-  struct ibv_pd *pd;
-  int access_flag = NUM2INT(obj_flag);
-  int size = NUM2INT(obj_size);
+rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_size,VALUE rb_flag){
+  struct rb_rdma_data_mr *data_mr;
+  struct rb_rdma_data_pd *data_pd;
+  int access_flag = NUM2INT(rb_flag);
+  int size = NUM2INT(rb_size);
   char *buf;
 
   long sz = sysconf(_SC_PAGESIZE);
   // temporary
   buf = malloc(sz * size);
   
-  TypedData_Get_Struct(obj_pd,struct ibv_pd,&rdma_pd_type,pd);
+  TypedData_Get_Struct(rb_pd,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
 
-  TypedData_Get_Struct(obj,struct ibv_mr,&rdma_mr_type,mr);
+  TypedData_Get_Struct(self,struct rb_rdma_data_mr,&rdma_mr_type,data_mr);
 
-  mr = ibv_reg_mr(pd,buf,size,access_flag);
-  if(!mr){
+  data_mr->pd = rb_pd;
+  data_mr->mr = ibv_reg_mr(data_pd->pd,buf,size,access_flag);
+  if(!data_mr->mr){
      rb_exc_raise(rb_syserr_new(errno, "mr reg fail"));
     // TODO ERROR
   }
-  DATA_PTR(obj) = mr;
 
-  return obj;
+  return self;
 }
 
 void Init_mr(){
