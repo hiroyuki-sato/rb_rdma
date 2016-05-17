@@ -1,24 +1,32 @@
 #include "rb_rdma.h"
 #include "context.h"
+#include "comp_channel.h"
 
 VALUE cCompChannel;
 
 static size_t
 memsize_rdma_comp_channel(const void *p){
-  return sizeof(struct ibv_comp_channel);
+  return sizeof(struct rb_rdma_data_comp_channel);
 };
 
 static void
 free_rdma_comp_channel(void *ptr){
-  struct ibv_comp_channel *c_channel = ptr;
+  struct rb_data_comp_channel *data_c_channel = ptr;
 
-  xfree(c_channel);
+  xfree(data_c_channel);
 };
+
+static void
+mark_rdma_comp_channel(void *ptr){
+  struct rb_rdma_data_comp_channel *data_c_channel = ptr;
+
+  rb_gc_mark(data_c_channel->context);
+}
 
 const rb_data_type_t rdma_comp_channel_type = {
   "rdma_comp_channel",
   {
-    0, 
+    mark_rdma_comp_channel, 
     free_rdma_comp_channel,
     memsize_rdma_comp_channel
   },
@@ -28,31 +36,31 @@ const rb_data_type_t rdma_comp_channel_type = {
 
 static VALUE
 comp_channel_s_alloc(VALUE klass){
-  VALUE obj;
-  struct ibv_comp_channel *c_channel = ALLOC(struct ibv_comp_channel);
-  obj = TypedData_Wrap_Struct(klass,&rdma_comp_channel_type,c_channel);
-  return obj;
+  VALUE self;
+  struct rb_rdma_data_comp_channel *data_c_channel = ALLOC(struct rb_rdma_data_comp_channel);
+  self = TypedData_Wrap_Struct(klass,&rdma_comp_channel_type,data_c_channel);
+  return self;
 }
 
 
 static VALUE
-rdma_comp_channel_initialize(VALUE obj, VALUE obj_ctx){
+rdma_comp_channel_initialize(VALUE self, VALUE rb_ctx){
 
-  struct rdma_context *ctx;
-  struct ibv_comp_channel *c_channel;
+  struct rdma_context *data_ctx;
+  struct rb_rdma_data_comp_channel *data_c_channel;
   
-  TypedData_Get_Struct(obj_ctx,struct rdma_context,&rdma_context_type,ctx);
+  TypedData_Get_Struct(rb_ctx,struct rdma_context,&rdma_context_type,data_ctx);
 
-  TypedData_Get_Struct(obj,struct ibv_comp_channel,&rdma_comp_channel_type,c_channel);
+  TypedData_Get_Struct(self,struct rb_rdma_data_comp_channel,
+                       &rdma_comp_channel_type,data_c_channel);
 
-  c_channel = ibv_create_comp_channel(ctx->context);
-  if(!c_channel){
+  data_c_channel->context = rb_ctx;
+  data_c_channel->comp_channel = ibv_create_comp_channel(data_ctx->context);
+  if(!data_c_channel->comp_channel){
      rb_exc_raise(rb_syserr_new(errno, "comp_channel alloc fail"));
-    // TODO ERROR
   }
-  DATA_PTR(obj) = c_channel;
 
-  return obj;
+  return self;
 }
 
 void Init_comp_channel(){
