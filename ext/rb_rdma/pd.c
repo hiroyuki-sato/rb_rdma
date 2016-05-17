@@ -1,12 +1,8 @@
 #include "rb_rdma.h"
 #include "context.h"
+#include "pd.h"
 
 VALUE cPD;
-
-struct rb_rdma_data_pd {
-  VALUE context;
-  struct ibv_pd *pd;
-};
 
 static size_t
 memsize_rdma_pd(const void *p){
