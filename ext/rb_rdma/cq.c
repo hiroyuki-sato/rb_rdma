@@ -1,25 +1,34 @@
 #include "rb_rdma.h"
 #include "context.h"
+#include "cq.h"
 #include "comp_channel.h"
 
 VALUE cCQ;
 
 static size_t
 memsize_rdma_cq(const void *p){
-  return sizeof(struct ibv_cq *);
+  return sizeof(struct rb_rdma_data_cq);
 };
 
 static void
 free_rdma_cq(void *ptr){
-  struct ibv_cq *cq = ptr;
+  struct rb_rdma_data_cq *data_cq = ptr;
 
-  ibv_destroy_cq(cq);
+  ibv_destroy_cq(data_cq->cq);
+  xfree(data_cq);
 };
+static void
+mark_rdma_cq(void *ptr){
+  struct rb_rdma_data_cq *data_cq = ptr;
+
+  rb_gc_mark(data_cq->context);
+  rb_gc_mark(data_cq->comp_channel);
+}
 
 const rb_data_type_t rdma_cq_type = {
   "rdma_cq",
   {
-    0, 
+    mark_rdma_cq, 
     free_rdma_cq,
     memsize_rdma_cq
   },
@@ -29,37 +38,38 @@ const rb_data_type_t rdma_cq_type = {
 
 static VALUE
 cq_s_alloc(VALUE klass){
-  VALUE obj;
-  obj = TypedData_Wrap_Struct(klass,&rdma_cq_type,0);
-  return obj;
+  VALUE self;
+  struct rb_rdma_data_cq *data_cq = ALLOC(struct rb_rdma_data_cq);
+  self = TypedData_Wrap_Struct(klass,&rdma_cq_type,data_cq);
+  return self;
 }
 
 
 static VALUE
-rdma_cq_initialize(VALUE self,VALUE obj_ctx,VALUE obj_cqe,VALUE obj_cq_context,
-                   VALUE obj_c_channel, VALUE obj_comp_vector){
-  struct ibv_cq *cq;
-  struct ibv_comp_channel *c_channel;
-  struct rdma_context *ctx;
+rdma_cq_initialize(VALUE self,VALUE rb_ctx,VALUE rb_cqe,VALUE rb_cq_context,
+                   VALUE rb_c_channel, VALUE rb_comp_vector){
+  struct rb_rdma_data_cq *data_cq;
+  struct rb_rdma_data_comp_channel *data_c_channel;
+  struct rdma_context *data_ctx;
   int cqe;
 
-  cqe = NUM2INT(obj_cqe);
+  cqe = NUM2INT(rb_cqe);
 
-  TypedData_Get_Struct(obj_ctx,struct rdma_context,&rdma_context_type,ctx);
-  TypedData_Get_Struct(obj_c_channel,struct ibv_comp_channel,
-                       &rdma_comp_channel_type,c_channel);
-  
-  TypedData_Get_Struct(self,struct ibv_cq,&rdma_cq_type,cq);
+  TypedData_Get_Struct(rb_ctx,struct rdma_context,&rdma_context_type,data_ctx);
+  TypedData_Get_Struct(rb_c_channel,struct rb_rdma_data_comp_channel,
+                       &rdma_comp_channel_type,data_c_channel);
+  TypedData_Get_Struct(self,struct rb_rdma_data_cq,&rdma_cq_type,data_cq);
 
-  cq = ibv_create_cq(ctx->context,cqe,NULL,c_channel,0);
-//  cq = ibv_create_cq(ctx->context,cqe,NULL,NULL,0);
-  if(!cq){
+  data_cq->context = rb_ctx;
+  data_cq->comp_channel = rb_c_channel;
+  data_cq->cq = ibv_create_cq(data_ctx->context,cqe,NULL,
+                              data_c_channel->comp_channel,0);
+  if(!data_cq->cq){
      printf("cq alloc error\n");
      rb_exc_raise(rb_syserr_new(errno, "cq alloc fail"));
 //     rb_syserr_new(errno,"test");
     // TODO ERROR
   }
-  DATA_PTR(self) = cq;
 
   return self;
 }
