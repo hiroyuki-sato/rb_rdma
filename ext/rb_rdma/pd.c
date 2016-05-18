@@ -12,9 +12,9 @@ memsize_rdma_pd(const void *p){
 static void
 free_rdma_pd(void *ptr){
   struct rb_rdma_data_pd *data_pd = ptr;
-  printf("%p\n",data_pd->pd);
 
-  ibv_dealloc_pd(data_pd->pd);
+  if( data_pd->pd )
+    ibv_dealloc_pd(data_pd->pd);
   xfree(data_pd);
 };
 
@@ -43,6 +43,7 @@ pd_s_alloc(VALUE klass){
   VALUE self;
   struct rb_rdma_data_pd *data_pd = ALLOC(struct rb_rdma_data_pd);
   self = TypedData_Wrap_Struct(klass,&rdma_pd_type,data_pd);
+  data_pd->pd = NULL;
   return self;
 }
 
@@ -58,11 +59,13 @@ rdma_pd_initialize(VALUE self, VALUE rb_ctx){
   TypedData_Get_Struct(self,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
 
   data_pd->context = rb_ctx;
+  printf("ibv_ctx in pd %p\n",ctx->context);
   data_pd->pd = ibv_alloc_pd(ctx->context);
   if(!data_pd->pd){
     rb_exc_raise(rb_syserr_new(errno, "pd alloc fail"));
     // TODO ERROR
   }
+  printf("alloc_pd %p\n",data_pd->pd);
 
   return self;
 }
