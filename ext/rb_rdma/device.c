@@ -62,7 +62,9 @@ rdma_device_initialize(VALUE obj, VALUE rb_ctx){
 
   TypedData_Get_Struct(obj,struct rb_rdma_data_device,&rdma_device_type,data_device);
 
-  ibv_query_device(ctx->context,data_device->attr);
+  if(ibv_query_device(ctx->context,data_device->attr))
+    rb_exc_raise(rb_syserr_new(errno, "query_device failed"));
+
   data_device->context = rb_ctx;
 
   return obj;
