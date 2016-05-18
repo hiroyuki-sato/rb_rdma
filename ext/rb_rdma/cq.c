@@ -14,7 +14,8 @@ static void
 free_rdma_cq(void *ptr){
   struct rb_rdma_data_cq *data_cq = ptr;
 
-  ibv_destroy_cq(data_cq->cq);
+  if( data_cq->cq )
+    ibv_destroy_cq(data_cq->cq);
   xfree(data_cq);
 };
 static void
@@ -62,15 +63,18 @@ rdma_cq_initialize(VALUE self,VALUE rb_ctx,VALUE rb_cqe,VALUE rb_cq_context,
 
   data_cq->context = rb_ctx;
   data_cq->comp_channel = rb_c_channel;
-  data_cq->cq = ibv_create_cq(data_ctx->context,cqe,NULL,
-                              data_c_channel->comp_channel,0);
+//  data_cq->cq = ibv_create_cq(data_ctx->context,cqe,NULL,
+//                              data_c_channel->comp_channel,0);
+  printf("context in cq %p\n",data_ctx->context);
+  data_cq->cq = ibv_create_cq(data_ctx->context,1,NULL,
+                              NULL,0);
   if(!data_cq->cq){
      printf("cq alloc error\n");
      rb_exc_raise(rb_syserr_new(errno, "cq alloc fail"));
 //     rb_syserr_new(errno,"test");
     // TODO ERROR
   }
-
+  printf("alloc cq %p\n",data_cq->cq);
   return self;
 }
 
