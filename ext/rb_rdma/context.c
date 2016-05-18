@@ -13,10 +13,15 @@ struct rdma_context {
 static void
 free_rdma_context(void *ptr){
   struct rdma_context *ctx = ptr;
+  printf("free context\n");
 
-  ibv_close_device(ctx->context);
-  ibv_free_device_list(ctx->devices);
+  if( ctx->context )
+    ibv_close_device(ctx->context);
 
+  if( ctx->devices )
+    ibv_free_device_list(ctx->devices);
+
+  xfree(ctx);
 };
 
 /*
@@ -87,6 +92,10 @@ rdma_context_open(int argc,VALUE *argv,VALUE self){
   } else {
     printf("open device %s\n",sval->device->name);
     sval->context = ibv_open_device(sval->device);
+    if(!sval->context){
+      rb_raise(rb_eRuntimeError, "open device failed");
+    }
+    printf("context addr %p\n",sval->context);
   }
 
   if( ibv_query_device(sval->context,&dev_attr) ){
