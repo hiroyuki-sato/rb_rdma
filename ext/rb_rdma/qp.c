@@ -183,31 +183,260 @@ printf("test2\n");
   return self;
 }
 
-
-
-/*
 static VALUE
-attr_qp_state(VALUE self){
+qp_attr_qp_state(VALUE self)
+{
   struct ibv_qp_attr attr;
-  struct rb_rdma_data_qp *qp;
-  
-  TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,qp);
-  ibv_query_qp(qp->qp,&attr,IBV_QP_STATE,qp->init_attr);
-
-  return INT2NUM(attr.qp_state);
-}
-*/
-
-static VALUE
-attr_qp_state(VALUE self){
-  struct ibv_qp_attr attr;
-  int ret;
-  ret = get_qp_attr(self,IBV_QP_STATE,&attr);
-  if( ret != 0 ){
+  if ( get_qp_attr(self,IBV_QP_STATE,&attr) ){
      rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
   }
-  return INT2NUM(attr.qp_state);
+  return INT2FIX(attr.qp_state);
 }
+
+static VALUE
+qp_attr_cur_qp_state(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_CUR_STATE,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.cur_qp_state);
+}
+
+static VALUE
+qp_attr_path_mtu(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_PATH_MTU,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.path_mtu);
+}
+
+static VALUE
+qp_attr_path_mig_state(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_PATH_MIG_STATE,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.path_mig_state);
+}
+
+static VALUE
+qp_attr_qkey(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_QKEY,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.qkey);
+}
+
+static VALUE
+qp_attr_rq_psn(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_RQ_PSN,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.rq_psn);
+}
+
+static VALUE
+qp_attr_sq_psn(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_SQ_PSN,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.sq_psn);
+}
+
+static VALUE
+qp_attr_dest_qp_num(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_DEST_QPN,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.dest_qp_num);
+}
+
+static VALUE
+qp_attr_qp_access_flags(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_ACCESS_FLAGS,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.qp_access_flags);
+}
+
+#if 0
+static VALUE
+qp_attr_cap(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_CAP,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.cap);
+}
+
+static VALUE
+qp_attr_ah_attr(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_AV,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.ah_attr);
+}
+
+static VALUE
+qp_attr_alt_ah_attr(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,FIXME,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.alt_ah_attr);
+}
+#endif
+
+static VALUE
+qp_attr_pkey_index(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_PKEY_INDEX,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.pkey_index);
+}
+
+static VALUE
+qp_attr_alt_pkey_index(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_ALT_PATH,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.alt_pkey_index);
+}
+
+static VALUE
+qp_attr_en_sqd_async_notify(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_EN_SQD_ASYNC_NOTIFY,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.en_sqd_async_notify);
+}
+
+#if 0
+static VALUE
+qp_attr_sq_draining(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_STATE,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.sq_draining);
+}
+#endif
+
+static VALUE
+qp_attr_max_rd_atomic(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_MAX_QP_RD_ATOMIC,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.max_rd_atomic);
+}
+
+static VALUE
+qp_attr_max_dest_rd_atomic(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_MAX_DEST_RD_ATOMIC,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.max_dest_rd_atomic);
+}
+
+static VALUE
+qp_attr_min_rnr_timer(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_MIN_RNR_TIMER,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.min_rnr_timer);
+}
+
+static VALUE
+qp_attr_port_num(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_PORT,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.port_num);
+}
+
+static VALUE
+qp_attr_timeout(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_TIMEOUT,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.timeout);
+}
+
+static VALUE
+qp_attr_retry_cnt(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_RETRY_CNT,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.retry_cnt);
+}
+
+static VALUE
+qp_attr_rnr_retry(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_RNR_RETRY,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.rnr_retry);
+}
+
+static VALUE
+qp_attr_alt_port_num(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_ALT_PATH,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.alt_port_num);
+}
+
+static VALUE
+qp_attr_alt_timeout(VALUE self)
+{
+  struct ibv_qp_attr attr;
+  if ( get_qp_attr(self,IBV_QP_ALT_PATH,&attr) ){
+     rb_exc_raise(rb_syserr_new(errno, "qp attr get fail"));
+  }
+  return INT2FIX(attr.alt_timeout);
+}
+
 
 void Init_qp(){
 
@@ -215,7 +444,32 @@ void Init_qp(){
   rb_define_alloc_func(cQP, qp_s_alloc);
 //  rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
   rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
-  rb_define_method(cQP,"qp_state", attr_qp_state,0);
+
+  rb_define_method(cQP,"qp_state",qp_attr_qp_state,0);
+  rb_define_method(cQP,"cur_qp_state",qp_attr_cur_qp_state,0);
+  rb_define_method(cQP,"path_mtu",qp_attr_path_mtu,0);
+  rb_define_method(cQP,"path_mig_state",qp_attr_path_mig_state,0);
+  rb_define_method(cQP,"qkey",qp_attr_qkey,0);
+  rb_define_method(cQP,"rq_psn",qp_attr_rq_psn,0);
+  rb_define_method(cQP,"sq_psn",qp_attr_sq_psn,0);
+  rb_define_method(cQP,"dest_qp_num",qp_attr_dest_qp_num,0);
+  rb_define_method(cQP,"qp_access_flags",qp_attr_qp_access_flags,0);
+//  rb_define_method(cQP,"cap",qp_attr_cap,0);
+//  rb_define_method(cQP,"ah_attr",qp_attr_ah_attr,0);
+//  rb_define_method(cQP,"alt_ah_attr",qp_attr_alt_ah_attr,0);
+  rb_define_method(cQP,"pkey_index",qp_attr_pkey_index,0);
+  rb_define_method(cQP,"alt_pkey_index",qp_attr_alt_pkey_index,0);
+  rb_define_method(cQP,"en_sqd_async_notify",qp_attr_en_sqd_async_notify,0);
+//  rb_define_method(cQP,"sq_draining",qp_attr_sq_draining,0);
+  rb_define_method(cQP,"max_rd_atomic",qp_attr_max_rd_atomic,0);
+  rb_define_method(cQP,"max_dest_rd_atomic",qp_attr_max_dest_rd_atomic,0);
+  rb_define_method(cQP,"min_rnr_timer",qp_attr_min_rnr_timer,0);
+  rb_define_method(cQP,"port_num",qp_attr_port_num,0);
+  rb_define_method(cQP,"timeout",qp_attr_timeout,0);
+  rb_define_method(cQP,"retry_cnt",qp_attr_retry_cnt,0);
+  rb_define_method(cQP,"rnr_retry",qp_attr_rnr_retry,0);
+  rb_define_method(cQP,"alt_port_num",qp_attr_alt_port_num,0);
+  rb_define_method(cQP,"alt_timeout",qp_attr_alt_timeout,0);
 
 }
 
