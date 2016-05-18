@@ -18,7 +18,8 @@ static void
 free_rdma_mr(void *ptr){
   struct rb_rdma_data_mr *data_mr = ptr;
 
-  ibv_dereg_mr(data_mr->mr);
+  if( data_mr->mr )
+    ibv_dereg_mr(data_mr->mr);
   xfree(data_mr);
 };
 
@@ -26,7 +27,7 @@ static void
 mark_rdma_mr(void *ptr){
   struct rb_rdma_data_mr *data_mr = ptr;
 
-  rb_mark_gc(data_mr->pd);
+  rb_gc_mark(data_mr->pd);
 }
 
 static const rb_data_type_t rdma_mr_type = {
@@ -44,6 +45,7 @@ static VALUE
 mr_s_alloc(VALUE klass){
   VALUE self;
   struct rb_rdma_data_mr *data_mr = ALLOC(struct rb_rdma_data_mr);
+  data_mr->mr = NULL;
   self = TypedData_Wrap_Struct(klass,&rdma_mr_type,data_mr);
   return self;
 }
@@ -66,7 +68,8 @@ rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_size,VALUE rb_fl
   TypedData_Get_Struct(self,struct rb_rdma_data_mr,&rdma_mr_type,data_mr);
 
   data_mr->pd = rb_pd;
-  data_mr->mr = ibv_reg_mr(data_pd->pd,buf,size,access_flag);
+  printf("pd in mr %p\n",data_pd->pd);
+  data_mr->mr = ibv_reg_mr(data_pd->pd,buf,10,access_flag);
   if(!data_mr->mr){
      rb_exc_raise(rb_syserr_new(errno, "mr reg fail"));
     // TODO ERROR
