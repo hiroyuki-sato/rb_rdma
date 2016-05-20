@@ -41,8 +41,10 @@ const rb_data_type_t rdma_pd_type = {
 static VALUE
 pd_s_alloc(VALUE klass){
   VALUE self;
-  struct rb_rdma_data_pd *data_pd = ALLOC(struct rb_rdma_data_pd);
-  self = TypedData_Wrap_Struct(klass,&rdma_pd_type,data_pd);
+  struct rb_rdma_data_pd *data_pd;
+
+  self = TypedData_Make_Struct(klass,struct rb_rdma_data_pd,
+                              &rdma_pd_type,data_pd);
   data_pd->pd = NULL;
   return self;
 }

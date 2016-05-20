@@ -53,12 +53,12 @@ static VALUE
 qp_s_alloc(VALUE klass){
   VALUE obj;
 
-  struct rb_rdma_data_qp *qp = ALLOC(struct rb_rdma_data_qp);
+  struct rb_rdma_data_qp *qp;
   struct ibv_qp_init_attr *init_attr = ALLOC(struct ibv_qp_init_attr);
-  qp->init_attr = init_attr;
-  qp->qp = NULL;
    
-  obj = TypedData_Wrap_Struct(klass,&rdma_qp_type,qp);
+  obj = TypedData_Make_Struct(klass,struct rb_rdma_data_qp,&rdma_qp_type,
+                              qp);
+  qp->init_attr = init_attr;
   return obj;
 }
 

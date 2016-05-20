@@ -44,9 +44,10 @@ static const rb_data_type_t rdma_mr_type = {
 static VALUE
 mr_s_alloc(VALUE klass){
   VALUE self;
-  struct rb_rdma_data_mr *data_mr = ALLOC(struct rb_rdma_data_mr);
+  struct rb_rdma_data_mr *data_mr;
+  self = TypedData_Make_Struct(klass,struct rb_rdma_data_mr,&rdma_mr_type,
+                               data_mr);
   data_mr->mr = NULL;
-  self = TypedData_Wrap_Struct(klass,&rdma_mr_type,data_mr);
   return self;
 }
 

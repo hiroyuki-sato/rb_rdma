@@ -45,8 +45,11 @@ static VALUE
 device_s_alloc(VALUE klass){
   VALUE obj;
   struct ibv_device_attr *attr = ALLOC(struct ibv_device_attr);
-  struct rb_rdma_data_device *data_device = ALLOC(struct rb_rdma_data_device);
-  obj = TypedData_Wrap_Struct(klass,&rdma_device_type,data_device);
+  struct rb_rdma_data_device *data_device;
+
+  obj = TypedData_Make_Struct(klass,struct rb_rdma_data_device,
+                              &rdma_device_type,data_device);
+  memset(attr,0,sizeof(struct ibv_device_attr));
   data_device->attr = attr;
   return obj;
 }

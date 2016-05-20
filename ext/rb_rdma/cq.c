@@ -40,8 +40,9 @@ const rb_data_type_t rdma_cq_type = {
 static VALUE
 cq_s_alloc(VALUE klass){
   VALUE self;
-  struct rb_rdma_data_cq *data_cq = ALLOC(struct rb_rdma_data_cq);
-  self = TypedData_Wrap_Struct(klass,&rdma_cq_type,data_cq);
+  struct rb_rdma_data_cq *data_cq;
+  self = TypedData_Make_Struct(klass,struct rb_rdma_data_cq,&rdma_cq_type,
+                               data_cq);
   return self;
 }
 

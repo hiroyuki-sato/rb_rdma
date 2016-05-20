@@ -37,8 +37,10 @@ const rb_data_type_t rdma_comp_channel_type = {
 static VALUE
 comp_channel_s_alloc(VALUE klass){
   VALUE self;
-  struct rb_rdma_data_comp_channel *data_c_channel = ALLOC(struct rb_rdma_data_comp_channel);
-  self = TypedData_Wrap_Struct(klass,&rdma_comp_channel_type,data_c_channel);
+  struct rb_rdma_data_comp_channel *data_c_channel;
+
+  self = TypedData_Make_Struct(klass,struct rb_rdma_data_comp_channel,
+                               &rdma_comp_channel_type,data_c_channel);
   return self;
 }
 

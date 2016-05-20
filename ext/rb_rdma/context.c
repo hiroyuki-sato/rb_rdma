@@ -57,6 +57,7 @@ rdma_context_open(int argc,VALUE *argv,VALUE self){
   int num_dev;
   struct ibv_device_attr dev_attr;
   int port_num;
+
   struct rdma_context *sval = ALLOC(struct rdma_context);
   
   rb_scan_args(argc, argv, "11", &rb_dev_name, &rb_port_num);
@@ -74,7 +75,8 @@ rdma_context_open(int argc,VALUE *argv,VALUE self){
       rb_raise(rb_eArgError, "Invalid port_num argument");
   }    
   
-  obj = TypedData_Wrap_Struct(cContext, &rdma_context_type, sval);
+  obj = TypedData_Make_Struct(cContext,struct rdma_context,&rdma_context_type,sval);
+
   sval->devices = ibv_get_device_list(&num_dev);
   sval->device = NULL;
 
