@@ -38,7 +38,7 @@ static const rb_data_type_t rdma_mr_type = {
     memsize_rdma_mr
   },
   0,0,
-  RUBY_TYPED_FREE_IMMEDIATELY  
+  0
 };
 
 static VALUE
@@ -79,11 +79,32 @@ rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_size,VALUE rb_fl
   return self;
 }
 
+static struct ibv_mr *
+get_mr(VALUE self){
+  struct rb_rdma_data_mr *data_mr;
+  TypedData_Get_Struct(self,struct rb_rdma_data_mr,&rdma_mr_type,data_mr);
+
+  return data_mr->mr;
+}
+
+static VALUE
+rdma_mr_lkey(VALUE self){
+  return INT2NUM(get_mr(self)->lkey);
+}
+
+static VALUE
+rdma_mr_rkey(VALUE self){
+  return INT2NUM(get_mr(self)->rkey);
+}
+
 void Init_mr(){
 
   cMR = rb_define_class_under(mRbRDMA, "MR", rb_cData);
   rb_define_alloc_func(cMR, mr_s_alloc);
 //  rb_define_method(cMR,"initialize", rdma_mr_initialize,3);
   rb_define_method(cMR,"initialize", rdma_mr_initialize,4);
+
+  rb_define_method(cMR,"lkey",rdma_mr_lkey,0);
+  rb_define_method(cMR,"rkey",rdma_mr_rkey,0);
 
 }
