@@ -46,7 +46,7 @@ const rb_data_type_t rdma_qp_type = {
     memsize_rdma_qp
   },
   0,0,
-  RUBY_TYPED_FREE_IMMEDIATELY  
+  0
 };
 
 static VALUE
@@ -437,6 +437,41 @@ qp_attr_alt_timeout(VALUE self)
   return INT2FIX(attr.alt_timeout);
 }
 
+#if 0
+static VALUE
+rdma_qp_post_recv(VALUE self,VALUE, rb_mr,VALUE rb_wr_id){
+
+  int wr_id;
+  int i;
+  struct ibv_recv_wr *bad_wr;
+
+  struct ibv_sge list;
+  struct ibv_recv_wr wr;
+  struct rb_rdma_data_qp *data_qp;
+  struct rb_rdma_data_pd *data_pd;
+  struct rb_rdma_data_mr *data_mr;
+
+  TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,data_qp);
+
+  TypedData_Get_Struct(data_qp->pd,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
+  TypedData_Get_Struct(data_pd->mr,struct rb_rdma_data_mr,&rdma_mr_type,data_mr);
+
+  list.addr = (uintptr_t) data_mr->buf;
+  list.length = data_mr->size;
+  list.lkey = data_mr->mr->lkey;
+
+  wr.wr_id = PINGPONG_RECV_WRID,
+  wr.sg_list    = &list,
+  wr.num_sge    = 1,
+
+  TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,data_qp);
+
+  for( i = 0 ; i < n ; ++i ){
+    if( ibv_post_recv(data_qp->qp,&wr,&bad_wr);
+  }
+
+}
+#endif
 
 void Init_qp(){
 
@@ -444,6 +479,7 @@ void Init_qp(){
   rb_define_alloc_func(cQP, qp_s_alloc);
 //  rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
   rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
+//  rb_define_method(cQP,"post_recv",rdma_qp_post_recv,0);
 
   rb_define_method(cQP,"qp_state",qp_attr_qp_state,0);
   rb_define_method(cQP,"cur_qp_state",qp_attr_cur_qp_state,0);
