@@ -35,7 +35,7 @@ const rb_data_type_t rdma_pd_type = {
     memsize_rdma_pd
   },
   0,0,
-  RUBY_TYPED_FREE_IMMEDIATELY  
+  0
 };
 
 static VALUE

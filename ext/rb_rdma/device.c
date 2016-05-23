@@ -38,7 +38,7 @@ static const rb_data_type_t rdma_device_type = {
     memsize_rdma_device
   },
   0,0,
-  RUBY_TYPED_FREE_IMMEDIATELY  
+  0
 };
 
 static VALUE

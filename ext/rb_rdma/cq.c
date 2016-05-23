@@ -34,7 +34,7 @@ const rb_data_type_t rdma_cq_type = {
     memsize_rdma_cq
   },
   0,0,
-  RUBY_TYPED_FREE_IMMEDIATELY  
+  0
 };
 
 static VALUE

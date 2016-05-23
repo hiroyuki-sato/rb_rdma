@@ -31,7 +31,7 @@ const rb_data_type_t rdma_comp_channel_type = {
     memsize_rdma_comp_channel
   },
   0,0,
-  RUBY_TYPED_FREE_IMMEDIATELY  
+  0  
 };
 
 static VALUE
