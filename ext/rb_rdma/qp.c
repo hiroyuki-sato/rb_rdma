@@ -55,7 +55,7 @@ qp_s_alloc(VALUE klass){
 
   struct rb_rdma_data_qp *qp;
   struct ibv_qp_init_attr *init_attr = ALLOC(struct ibv_qp_init_attr);
-   
+
   obj = TypedData_Make_Struct(klass,struct rb_rdma_data_qp,&rdma_qp_type,
                               qp);
   qp->init_attr = init_attr;
@@ -115,6 +115,7 @@ rdma_qp_initialize(int argc, VALUE *argv, VALUE self){
 //  qp->init_attr.recv_cq = recv_cq->cq;
   qp->init_attr.send_cq = cq;
   qp->init_attr.recv_cq = cq;
+  qp->init_attr.srq = NULL;
   qp->init_attr.cap.max_send_wr = 1;
   qp->init_attr.cap.max_send_wr = 1;
   qp->init_attr.cap.max_recv_wr = 1;
@@ -128,6 +129,7 @@ printf("***************\n");
   
   data_qp->init_attr->send_cq = send_cq->cq;
   data_qp->init_attr->recv_cq = recv_cq->cq;
+  data_qp->init_attr->srq = NULL;
   data_qp->init_attr->cap.max_send_wr = 1;
   data_qp->init_attr->cap.max_recv_wr = 1;
   data_qp->init_attr->cap.max_send_sge = 1;
@@ -137,6 +139,7 @@ printf("***************\n");
 //#if 0
   attr2.send_cq = send_cq->cq;
   attr2.recv_cq = recv_cq->cq;
+  attr2.srq = NULL;
   attr2.cap.max_send_wr = 1;
   attr2.cap.max_recv_wr = 1;
   attr2.cap.max_send_sge = 1;
