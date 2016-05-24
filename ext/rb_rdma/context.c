@@ -58,7 +58,7 @@ rdma_context_open(int argc,VALUE *argv,VALUE self){
   struct ibv_device_attr dev_attr;
   int port_num;
 
-  struct rdma_context *sval = ALLOC(struct rdma_context);
+  struct rdma_context *sval;
   
   rb_scan_args(argc, argv, "11", &rb_dev_name, &rb_port_num);
 
