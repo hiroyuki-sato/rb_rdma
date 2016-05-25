@@ -96,7 +96,7 @@ rdma_qp_initialize(int argc, VALUE *argv, VALUE self){
   struct rb_rdma_data_cq *recv_cq;
   struct ibv_srq *srq; /* FIXME */
   struct rb_rdma_data_pd *data_pd;
-  struct ibv_qp_init_attr attr2;
+
   VALUE rb_pd,rb_qt_type, rb_send_cq, rb_recv_cq, rb_srq, rb_sq_sig_all, rb_cap;
 //  struct ibv_qp_init_attr init_attr;
 
@@ -112,22 +112,6 @@ rdma_qp_initialize(int argc, VALUE *argv, VALUE self){
   
   TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,data_qp);
 
-#if 0
-//  qp->init_attr.send_cq = send_cq->cq;
-//  qp->init_attr.recv_cq = recv_cq->cq;
-  qp->init_attr.send_cq = cq;
-  qp->init_attr.recv_cq = cq;
-  qp->init_attr.srq = NULL;
-  qp->init_attr.cap.max_send_wr = 1;
-  qp->init_attr.cap.max_send_wr = 1;
-  qp->init_attr.cap.max_recv_wr = 1;
-  qp->init_attr.cap.max_send_sge = 1;
-  qp->init_attr.cap.max_recv_sge = 1;
-  qp->init_attr.cap.max_inline_data = 0;
-  qp->init_attr.qp_type = qp_type;
-//  qp->init_attr.qp_type = IBV_QPT_RC;
-#endif
-
 printf("***************\n");
   
   data_qp->init_attr->send_cq = send_cq->cq;
@@ -139,36 +123,13 @@ printf("***************\n");
   data_qp->init_attr->cap.max_recv_sge = 1;
   data_qp->init_attr->cap.max_inline_data = 0;
   data_qp->init_attr->qp_type = qp_type;
-
-//#if 0
-  attr2.send_cq = send_cq->cq;
-  attr2.recv_cq = recv_cq->cq;
-  attr2.srq = NULL;
-  attr2.cap.max_send_wr = 1;
-  attr2.cap.max_recv_wr = 1;
-  attr2.cap.max_send_sge = 1;
-  attr2.cap.max_recv_sge = 1;
-  attr2.cap.max_inline_data = 0;
-  attr2.qp_type = IBV_QPT_RC;
-//#endif
   
-//  printf("%d\n",data_qp->init_attr->cap.max_recv_sge = 1);
-
-  printf("pd %p\n",data_pd->pd);
-  printf("send_cq %p\n",send_cq->cq);
-  printf("recv_cq %p\n",recv_cq->cq);
-printf("test\n");
   data_qp->qp = ibv_create_qp(data_pd->pd,data_qp->init_attr);
-printf("******\n");
-//  data_qp->qp = ibv_create_qp(data_pd->pd,&attr2);
 
-  printf("context in pd: %p",data_pd->pd->context);
-printf("test2\n");
   if(!data_qp->qp){
     // TODO ERROR
     rb_exc_raise(rb_syserr_new(errno, "qp alloc fail"));
   }
-//  DATA_PTR(self) = qp;
 
   { 
     struct ibv_qp_attr attr = {
