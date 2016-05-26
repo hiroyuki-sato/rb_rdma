@@ -7,6 +7,9 @@ struct rb_rdma_data_cq {
   struct ibv_cq *cq;
 };
 
+#define GET_CQ_DATA(klass,data) \
+  TypedData_Get_Struct(klass,struct rb_rdma_data_cq, &rdma_cq_type,data);
+
 extern void Init_cq();
 extern VALUE cCQ;
 

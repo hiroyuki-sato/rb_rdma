@@ -1,6 +1,7 @@
 #include "rb_rdma.h"
 #include "context.h"
 #include "pd.h"
+#include "mr.h"
 
 static VALUE cMR;
 
@@ -64,9 +65,9 @@ rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_size,VALUE rb_fl
   // temporary
   buf = malloc(sz * size);
   
-  TypedData_Get_Struct(rb_pd,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
+  GET_PD_DATA(rb_pd,data_pd);
 
-  TypedData_Get_Struct(self,struct rb_rdma_data_mr,&rdma_mr_type,data_mr);
+  GET_MR_DATA(self,data_mr);
 
   data_mr->pd = rb_pd;
   printf("pd in mr %p\n",data_pd->pd);
@@ -82,8 +83,7 @@ rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_size,VALUE rb_fl
 static struct ibv_mr *
 get_mr(VALUE self){
   struct rb_rdma_data_mr *data_mr;
-  TypedData_Get_Struct(self,struct rb_rdma_data_mr,&rdma_mr_type,data_mr);
-
+  GET_MR_DATA(self,data_mr);
   return data_mr->mr;
 }
 

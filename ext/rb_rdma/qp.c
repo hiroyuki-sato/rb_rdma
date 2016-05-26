@@ -1,6 +1,7 @@
 #include "rb_rdma.h"
 #include "pd.h"
 #include "cq.h"
+#include "qp.h"
 
 VALUE cQP;
 
@@ -67,7 +68,7 @@ qp_s_alloc(VALUE klass){
 static int
 get_qp_attr(VALUE self,enum ibv_qp_attr_mask attr_mask,struct ibv_qp_attr *attr){
   struct rb_rdma_data_qp *qp;
-  TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,qp);
+  GET_QP_DATA(self,qp);
   return ibv_query_qp(qp->qp,attr,attr_mask,qp->init_attr);
 }
 
@@ -106,11 +107,10 @@ rdma_qp_initialize(int argc, VALUE *argv, VALUE self){
 
   qp_type = NUM2INT(rb_qt_type);
 
-  TypedData_Get_Struct(rb_pd,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
-  TypedData_Get_Struct(rb_send_cq,struct rb_rdma_data_cq,&rdma_cq_type,send_cq);
-  TypedData_Get_Struct(rb_recv_cq,struct rb_rdma_data_cq,&rdma_cq_type,recv_cq);
-  
-  TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,data_qp);
+  GET_PD_DATA(rb_pd,data_pd);
+  GET_CQ_DATA(rb_send_cq,send_cq);
+  GET_CQ_DATA(rb_send_cq,recv_cq);
+  GET_QP_DATA(self,data_qp);
 
 printf("***************\n");
   
@@ -420,10 +420,9 @@ rdma_qp_post_recv(VALUE self,VALUE, rb_mr,VALUE rb_wr_id){
   struct rb_rdma_data_pd *data_pd;
   struct rb_rdma_data_mr *data_mr;
 
-  TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,data_qp);
-
-  TypedData_Get_Struct(data_qp->pd,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
-  TypedData_Get_Struct(data_pd->mr,struct rb_rdma_data_mr,&rdma_mr_type,data_mr);
+  GET_QP_DATA(self,data_qp);
+  GET_PD_DATA(rb_pd,data_pd);
+  GET_MR_DATA(rb_pd,data_mr);
 
   list.addr = (uintptr_t) data_mr->buf;
   list.length = data_mr->size;
@@ -432,8 +431,6 @@ rdma_qp_post_recv(VALUE self,VALUE, rb_mr,VALUE rb_wr_id){
   wr.wr_id = PINGPONG_RECV_WRID,
   wr.sg_list    = &list,
   wr.num_sge    = 1,
-
-  TypedData_Get_Struct(self,struct rb_rdma_data_qp,&rdma_qp_type,data_qp);
 
   for( i = 0 ; i < n ; ++i ){
     if( ibv_post_recv(data_qp->qp,&wr,&bad_wr);

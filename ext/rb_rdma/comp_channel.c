@@ -51,10 +51,8 @@ rdma_comp_channel_initialize(VALUE self, VALUE rb_ctx){
   struct rdma_context *data_ctx;
   struct rb_rdma_data_comp_channel *data_c_channel;
   
-  TypedData_Get_Struct(rb_ctx,struct rdma_context,&rdma_context_type,data_ctx);
-
-  TypedData_Get_Struct(self,struct rb_rdma_data_comp_channel,
-                       &rdma_comp_channel_type,data_c_channel);
+  GET_Context_DATA(rb_ctx,data_ctx);
+  GET_Comp_Channel_DATA(self,data_c_channel);
 
   data_c_channel->context = rb_ctx;
   data_c_channel->comp_channel = ibv_create_comp_channel(data_ctx->context);

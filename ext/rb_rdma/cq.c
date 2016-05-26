@@ -57,10 +57,9 @@ rdma_cq_initialize(VALUE self,VALUE rb_ctx,VALUE rb_cqe,VALUE rb_cq_context,
 
   cqe = NUM2INT(rb_cqe);
 
-  TypedData_Get_Struct(rb_ctx,struct rdma_context,&rdma_context_type,data_ctx);
-  TypedData_Get_Struct(rb_c_channel,struct rb_rdma_data_comp_channel,
-                       &rdma_comp_channel_type,data_c_channel);
-  TypedData_Get_Struct(self,struct rb_rdma_data_cq,&rdma_cq_type,data_cq);
+  GET_Context_DATA(rb_ctx,data_ctx);
+  GET_Comp_Channel_DATA(rb_c_channel,data_c_channel);
+  GET_CQ_DATA(self,data_cq);
 
   data_cq->context = rb_ctx;
   data_cq->comp_channel = rb_c_channel;

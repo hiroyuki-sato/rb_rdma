@@ -56,9 +56,9 @@ rdma_pd_initialize(VALUE self, VALUE rb_ctx){
   struct rdma_context *ctx;
   struct rb_rdma_data_pd *data_pd;
   
-  TypedData_Get_Struct(rb_ctx,struct rdma_context,&rdma_context_type,ctx);
+  GET_Context_DATA(rb_ctx,ctx);
 
-  TypedData_Get_Struct(self,struct rb_rdma_data_pd,&rdma_pd_type,data_pd);
+  GET_PD_DATA(self,data_pd);
 
   data_pd->context = rb_ctx;
   printf("ibv_ctx in pd %p\n",ctx->context);

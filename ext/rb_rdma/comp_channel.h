@@ -6,6 +6,10 @@ struct rb_rdma_data_comp_channel {
   struct ibv_comp_channel *comp_channel;
 };
 
+#define GET_Comp_Channel_DATA(klass,data) \
+  TypedData_Get_Struct(klass,struct rb_rdma_data_comp_channel, \
+                       &rdma_comp_channel_type,data);
+
 extern void Init_comp_channel();
 extern VALUE cCompChannel;
 
