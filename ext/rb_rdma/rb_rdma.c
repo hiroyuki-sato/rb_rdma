@@ -389,6 +389,8 @@ void Init_rb_rdma(){
   Init_cq();
   Init_qp();
 
+  Init_my_buffer();
+
 // temporary
     rb_const_set(mRbRDMA, rb_intern("ACCESS_LOCAL_WRITE"), INT2FIX(IBV_ACCESS_LOCAL_WRITE)); 
     rb_const_set(mRbRDMA, rb_intern("QPT_RC"), INT2FIX(IBV_QPT_RC)); 
