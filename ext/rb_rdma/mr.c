@@ -3,12 +3,7 @@
 #include "pd.h"
 #include "mr.h"
 
-static VALUE cMR;
-
-struct rb_rdma_data_mr {
-  VALUE pd;
-  struct ibv_mr *mr;
-};
+VALUE cMR;
 
 static size_t
 memsize_rdma_mr(const void *p){
@@ -29,9 +24,10 @@ mark_rdma_mr(void *ptr){
   struct rb_rdma_data_mr *data_mr = ptr;
 
   rb_gc_mark(data_mr->pd);
+  rb_gc_mark(data_mr->buf); // temporary
 }
 
-static const rb_data_type_t rdma_mr_type = {
+const rb_data_type_t rdma_mr_type = {
   "rdma_mr",
   {
     mark_rdma_mr, 
@@ -80,6 +76,8 @@ rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_flag){
      rb_exc_raise(rb_syserr_new(errno, "mr reg fail"));
     // TODO ERROR
   }
+
+  data_mr->buf = rb_buf;
 
   return self;
 }
