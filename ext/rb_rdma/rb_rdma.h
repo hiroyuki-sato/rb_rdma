@@ -1,3 +1,6 @@
+#if !defined(_RDMA_H_)
+# define _RDMA_H_
+
 #include "ruby.h"
 #include <infiniband/verbs.h>
 #include <infiniband/mad.h>
@@ -6,6 +9,7 @@
 
 extern VALUE mRbRDMA;
 
+extern const rb_data_type_t my_buffer_type;
 extern VALUE cMyBuffer;
 extern void Init_my_buffer();
 struct my_buffer {
@@ -18,3 +22,4 @@ struct my_buffer {
     rb_raise(rb_eTypeError, err_msg); \
   }
 
+#endif

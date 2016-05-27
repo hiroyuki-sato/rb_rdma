@@ -54,25 +54,28 @@ mr_s_alloc(VALUE klass){
 
 
 static VALUE
-rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_size,VALUE rb_flag){
+rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_flag){
   struct rb_rdma_data_mr *data_mr;
   struct rb_rdma_data_pd *data_pd;
-  int access_flag = NUM2INT(rb_flag);
-  int size = NUM2INT(rb_size);
-  char *buf;
+  int access_flag;
 
-  long sz = sysconf(_SC_PAGESIZE);
   // temporary
-  buf = malloc(sz * size);
-  
+  struct my_buffer *buf;
+
   Check_OBJ_Type(rb_pd,cPD,"not RDMA::PD object");
   GET_PD_DATA(rb_pd,data_pd);
+
+  Check_Type(rb_flag,T_FIXNUM);
+  access_flag = NUM2INT(rb_flag);
+
+  // temporary
+  TypedData_Get_Struct(rb_buf,struct my_buffer, &my_buffer_type,buf);
 
   GET_MR_DATA(self,data_mr);
 
   data_mr->pd = rb_pd;
   printf("pd in mr %p\n",data_pd->pd);
-  data_mr->mr = ibv_reg_mr(data_pd->pd,buf,10,access_flag);
+  data_mr->mr = ibv_reg_mr(data_pd->pd,buf->buf,buf->len,access_flag);
   if(!data_mr->mr){
      rb_exc_raise(rb_syserr_new(errno, "mr reg fail"));
     // TODO ERROR
@@ -102,8 +105,7 @@ void Init_mr(){
 
   cMR = rb_define_class_under(mRbRDMA, "MR", rb_cData);
   rb_define_alloc_func(cMR, mr_s_alloc);
-//  rb_define_method(cMR,"initialize", rdma_mr_initialize,3);
-  rb_define_method(cMR,"initialize", rdma_mr_initialize,4);
+  rb_define_method(cMR,"initialize", rdma_mr_initialize,3);
 
   rb_define_method(cMR,"lkey",rdma_mr_lkey,0);
   rb_define_method(cMR,"rkey",rdma_mr_rkey,0);
