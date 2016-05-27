@@ -2,6 +2,7 @@
 #include "pd.h"
 #include "cq.h"
 #include "qp.h"
+#include "mr.h"
 
 VALUE cQP;
 
@@ -406,38 +407,45 @@ qp_attr_alt_timeout(VALUE self)
   return INT2FIX(attr.alt_timeout);
 }
 
-#if 0
 static VALUE
-rdma_qp_post_recv(VALUE self,VALUE, rb_mr,VALUE rb_wr_id){
+rdma_qp_post_recv(VALUE self,VALUE rb_mr,VALUE rb_wr_id){
 
   int wr_id;
   int i;
+  int n = 1;
   struct ibv_recv_wr *bad_wr;
 
   struct ibv_sge list;
   struct ibv_recv_wr wr;
   struct rb_rdma_data_qp *data_qp;
-  struct rb_rdma_data_pd *data_pd;
   struct rb_rdma_data_mr *data_mr;
+  struct my_buffer *my_buf;
 
   GET_QP_DATA(self,data_qp);
-  GET_PD_DATA(rb_pd,data_pd);
-  GET_MR_DATA(rb_pd,data_mr);
+  GET_MR_DATA(rb_mr,data_mr);
 
-  list.addr = (uintptr_t) data_mr->buf;
-  list.length = data_mr->size;
+  TypedData_Get_Struct(data_mr->buf,struct my_buffer, &my_buffer_type,my_buf);
+
+  printf("--> %p:%d\n",my_buf->buf,my_buf->len);
+
+  Check_Type(rb_wr_id,T_FIXNUM);
+  wr_id = NUM2INT(rb_wr_id);
+
+  list.addr = (uintptr_t) my_buf->buf;
+  list.length = my_buf->len;
   list.lkey = data_mr->mr->lkey;
 
-  wr.wr_id = PINGPONG_RECV_WRID,
-  wr.sg_list    = &list,
-  wr.num_sge    = 1,
+  memset(&wr,0,sizeof(struct ibv_recv_wr));
+  wr.wr_id = wr_id;
+  wr.sg_list  = &list;
+  wr.num_sge  = 1;
 
   for( i = 0 ; i < n ; ++i ){
-    if( ibv_post_recv(data_qp->qp,&wr,&bad_wr);
+    if( ibv_post_recv(data_qp->qp,&wr,&bad_wr) ){
+    }
   }
-
+  return Qnil;
 }
-#endif
 
 void Init_qp(){
 
@@ -445,7 +453,7 @@ void Init_qp(){
   rb_define_alloc_func(cQP, qp_s_alloc);
 //  rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
   rb_define_method(cQP,"initialize", rdma_qp_initialize,-1);
-//  rb_define_method(cQP,"post_recv",rdma_qp_post_recv,0);
+  rb_define_method(cQP,"post_recv",rdma_qp_post_recv,2);
 
   rb_define_method(cQP,"qp_state",qp_attr_qp_state,0);
   rb_define_method(cQP,"cur_qp_state",qp_attr_cur_qp_state,0);
