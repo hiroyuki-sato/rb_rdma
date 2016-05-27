@@ -56,6 +56,7 @@ rdma_pd_initialize(VALUE self, VALUE rb_ctx){
   struct rdma_context *ctx;
   struct rb_rdma_data_pd *data_pd;
   
+  Check_OBJ_Type(rb_ctx,cContext,"not RDMA::Context object");
   GET_Context_DATA(rb_ctx,ctx);
 
   GET_PD_DATA(self,data_pd);

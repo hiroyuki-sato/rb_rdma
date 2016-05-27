@@ -61,6 +61,7 @@ rdma_device_initialize(VALUE obj, VALUE rb_ctx){
 //  struct ibv_device_attr *attr = NULL;
   struct rb_rdma_data_device *data_device;
   
+  Check_OBJ_Type(rb_ctx,cContext,"not RDMA::Context object");
   GET_Context_DATA(rb_ctx,ctx);
 
   TypedData_Get_Struct(obj,struct rb_rdma_data_device,&rdma_device_type,data_device);

@@ -13,3 +13,8 @@ struct my_buffer {
   int  len;
 };
   
+#define Check_OBJ_Type(klass,klass_type,err_msg) \
+  if (!RTEST(rb_obj_is_kind_of(klass, klass_type))) { \
+    rb_raise(rb_eTypeError, err_msg); \
+  }
+

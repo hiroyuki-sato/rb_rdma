@@ -65,6 +65,7 @@ rdma_mr_initialize(VALUE self,VALUE rb_pd,VALUE rb_buf,VALUE rb_size,VALUE rb_fl
   // temporary
   buf = malloc(sz * size);
   
+  Check_OBJ_Type(rb_pd,cPD,"not RDMA::PD object");
   GET_PD_DATA(rb_pd,data_pd);
 
   GET_MR_DATA(self,data_mr);

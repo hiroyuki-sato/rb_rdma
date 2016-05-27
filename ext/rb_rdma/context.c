@@ -62,6 +62,7 @@ rdma_context_open(int argc,VALUE *argv,VALUE self){
   
   rb_scan_args(argc, argv, "11", &rb_dev_name, &rb_port_num);
 
+  Check_Type(rb_dev_name,T_STRING);
   dev_name = StringValuePtr(rb_dev_name);
 
   switch(TYPE(rb_port_num)){

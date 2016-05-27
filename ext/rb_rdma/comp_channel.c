@@ -51,6 +51,7 @@ rdma_comp_channel_initialize(VALUE self, VALUE rb_ctx){
   struct rdma_context *data_ctx;
   struct rb_rdma_data_comp_channel *data_c_channel;
   
+  Check_OBJ_Type(rb_ctx,cContext,"not RDMA::Context object");
   GET_Context_DATA(rb_ctx,data_ctx);
   GET_Comp_Channel_DATA(self,data_c_channel);
 
