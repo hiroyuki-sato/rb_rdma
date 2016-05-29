@@ -426,8 +426,6 @@ rdma_qp_post_recv(VALUE self,VALUE rb_mr,VALUE rb_wr_id){
 
   TypedData_Get_Struct(data_mr->buf,struct my_buffer, &my_buffer_type,my_buf);
 
-  printf("--> %p:%d\n",my_buf->buf,my_buf->len);
-
   Check_Type(rb_wr_id,T_FIXNUM);
   wr_id = NUM2INT(rb_wr_id);
 
