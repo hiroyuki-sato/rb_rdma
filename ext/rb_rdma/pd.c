@@ -6,7 +6,7 @@ VALUE cPD;
 
 static size_t
 memsize_rdma_pd(const void *p){
-  return sizeof(struct ibv_pd *);
+  return sizeof(struct rb_rdma_data_pd *);
 };
 
 static void
