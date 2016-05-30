@@ -6,6 +6,7 @@
 #include "mr.h"
 #include "cq.h"
 #include "qp.h"
+#include "qp_attr.h"
 
 VALUE mRbRDMA = Qnil;
 
@@ -388,6 +389,7 @@ void Init_rb_rdma(){
   Init_mr();
   Init_cq();
   Init_qp();
+  Init_qp_attr();
 
   Init_my_buffer();
 
