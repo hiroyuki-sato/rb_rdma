@@ -40,35 +40,16 @@ qp_attr_s_alloc(VALUE klass){
 }
 
 
-#if 0
 static VALUE
-rdma_pd_initialize(VALUE self, VALUE rb_ctx){
-
-  struct rdma_context *ctx;
-  struct rb_rdma_data_pd *data_pd;
-  
-  Check_OBJ_Type(rb_ctx,cContext,"not RDMA::Context object");
-  GET_Context_DATA(rb_ctx,ctx);
-
-  GET_PD_DATA(self,data_pd);
-
-  data_pd->context = rb_ctx;
-  printf("ibv_ctx in pd %p\n",ctx->context);
-  data_pd->pd = ibv_alloc_pd(ctx->context);
-  if(!data_pd->pd){
-    rb_exc_raise(rb_syserr_new(errno, "pd alloc fail"));
-    // TODO ERROR
-  }
-  printf("alloc_pd %p\n",data_pd->pd);
+rdma_qp_attr_initialize(VALUE self){
 
   return self;
 }
-#endif
 
 void Init_qp_attr(){
 
   cQPAttr = rb_define_class_under(mRbRDMA, "QPAttr", rb_cData);
   rb_define_alloc_func(cQPAttr, qp_attr_s_alloc);
-//  rb_define_method(cQPAttr,"initialize", rdma_pd_initialize,1);
+  rb_define_method(cQPAttr,"initialize", rdma_qp_attr_initialize,1);
 
 }
