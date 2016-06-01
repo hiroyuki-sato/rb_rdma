@@ -46,10 +46,26 @@ rdma_qp_attr_initialize(VALUE self){
   return self;
 }
 
+static VALUE
+rdma_s_rtr_qp_attr(VALUE klass){
+  VALUE obj;
+  struct ibv_qp_attr *attr;
+
+  obj = qp_attr_s_alloc(klass);
+  
+  TypedData_Get_Struct(obj,struct ibv_qp_attr, &rdma_qp_attr_type,attr);
+
+  attr->qp_state = IBV_QPS_RTR;
+
+  return obj; 
+
+}
+
 void Init_qp_attr(){
 
   cQPAttr = rb_define_class_under(mRbRDMA, "QPAttr", rb_cData);
   rb_define_alloc_func(cQPAttr, qp_attr_s_alloc);
   rb_define_method(cQPAttr,"initialize", rdma_qp_attr_initialize,1);
+  rb_define_singleton_method(cQPAttr,"rtr_qp_attr", rdma_s_rtr_qp_attr,0);
 
 }
