@@ -408,6 +408,22 @@ qp_attr_alt_timeout(VALUE self)
 }
 
 static VALUE
+qp_attr_qp_num(VALUE self)
+{
+  struct rb_rdma_data_qp *data_qp;
+  GET_QP_DATA(self,data_qp);
+  return INT2FIX(data_qp->qp->qp_num);
+}
+
+static VALUE
+qp_attr_qp_type(VALUE self)
+{
+  struct rb_rdma_data_qp *data_qp;
+  GET_QP_DATA(self,data_qp);
+  return INT2FIX(data_qp->qp->qp_type);
+}
+
+static VALUE
 rdma_qp_post_recv(VALUE self,VALUE rb_mr,VALUE rb_wr_id){
 
   int wr_id;
@@ -478,6 +494,11 @@ void Init_qp(){
   rb_define_method(cQP,"rnr_retry",qp_attr_rnr_retry,0);
   rb_define_method(cQP,"alt_port_num",qp_attr_alt_port_num,0);
   rb_define_method(cQP,"alt_timeout",qp_attr_alt_timeout,0);
+  //
+  // from ibv_qp
+  rb_define_method(cQP,"qp_num",qp_attr_qp_num,0);
+  rb_define_method(cQP,"qp_type",qp_attr_qp_type,0);
+
 
 }
 
