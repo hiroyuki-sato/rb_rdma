@@ -71,7 +71,7 @@ rdma_port_initialize(VALUE self, VALUE rb_ctx,VALUE rb_port_num){
 
   data_port->context = rb_ctx;
   data_port->port_num = rb_port_num;
-  if(!ibv_query_port(ctx->context,port_num,data_port->port_attr)){
+  if(ibv_query_port(ctx->context,port_num,data_port->port_attr)){
     rb_exc_raise(rb_syserr_new(errno, "port query fail"));
   };
   return self;
