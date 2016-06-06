@@ -1,4 +1,6 @@
 #include "rb_rdma.h"
+#include "device.h"
+#include "port.h"
 
 VALUE cContext;
 //static VALUE mRbRDMA;
@@ -93,11 +95,24 @@ rdma_context_open(VALUE self,VALUE rb_dev_name){
   return obj;
 }
 
+static VALUE
+rdma_context_device(VALUE self){
+  return rb_funcall(cDevice,rb_intern("new"),1,self);
+}
+
+static VALUE
+rdma_context_port(VALUE self,VALUE port){
+  return rb_funcall(cPort,rb_intern("new"),2,self,port);
+}
+
 void Init_context(){
 
 //  cContext = rb_define_class_under(mRbRDMA, "Context", rb_cObject);
   cContext = rb_define_class_under(mRbRDMA, "Context", rb_cData);
   rb_define_singleton_method(cContext, "open", rdma_context_open, 1);
+  rb_define_method(cContext,"device",rdma_context_device,0);
+  rb_define_method(cContext,"port",rdma_context_port,1);
+
 
   // http://d.hatena.ne.jp/tueda_wolf/20091230/p1
 //  rb_define_alloc_func(cContext, ruby_Object3D_allocate);
