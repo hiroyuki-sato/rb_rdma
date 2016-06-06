@@ -1,12 +1,8 @@
 #include "rb_rdma.h"
 #include "context.h"
+#include "device.h"
 
-static VALUE cDevice;
-
-struct rb_rdma_data_device {
-  VALUE context;
-  struct ibv_device_attr *attr;
-};
+VALUE cDevice;
 
 static size_t
 memsize_rdma_device(const void *p){
