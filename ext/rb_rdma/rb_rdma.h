@@ -22,4 +22,9 @@ struct my_buffer {
     rb_raise(rb_eTypeError, err_msg); \
   }
 
+#ifdef DEBUG
+  #define DEBUG_CMD(x) x
+#else
+  #define DEBUG_CMD(x) 
+#endif
 #endif

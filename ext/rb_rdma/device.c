@@ -13,7 +13,7 @@ static void
 free_rdma_device(void *ptr){
   struct rb_rdma_data_device *data_device = ptr;
 
-  printf("-----free called\n");
+  DEBUG_CMD(printf("-----free called\n"));
 
   xfree(data_device);
 };
@@ -322,6 +322,7 @@ dev_attr_phys_port_cnt(VALUE self)
 
 void Init_device(){
 
+  DEBUG_CMD(printf("-----Init device\n"));
   cDevice = rb_define_class_under(mRbRDMA, "Device", rb_cData);
   rb_define_alloc_func(cDevice, device_s_alloc);
   rb_define_method(cDevice,"initialize", rdma_device_initialize,1);
