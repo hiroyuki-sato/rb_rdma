@@ -461,6 +461,27 @@ rdma_qp_post_recv(VALUE self,VALUE rb_mr,VALUE rb_wr_id){
   return Qnil;
 }
 
+// 
+
+static VALUE 
+rdma_qp_modify_qp(VALUE self, VALUE rb_qp_attr, VALUE rb_qp_attr_mask)
+{
+  struct rb_rdma_data_qp *data_qp;
+  struct ibv_qp_attr *qp_attr;
+  int attr_mask;  
+
+  GET_QP_DATA(self,data_qp);
+  GET_QP_ATTR_DATA(rb_qp_attr,qp_attr);
+  attr_mask = FIX2INT(rb_qp_attr_mask);
+
+  if( ibv_modify_qp(data_qp->qp,qp_attr,attr_mask) ){;
+    rb_exc_raise(rb_syserr_new(errno, "modify_qp fail"));
+  }
+
+  return Qnil;
+}
+
+
 void Init_qp(){
 
   cQP = rb_define_class_under(mRbRDMA, "QP", rb_cData);
@@ -499,6 +520,8 @@ void Init_qp(){
   rb_define_method(cQP,"qp_num",qp_attr_qp_num,0);
   rb_define_method(cQP,"qp_type",qp_attr_qp_type,0);
 
+  // modify
+  rb_define_method(cQP,"modify_qp",rdma_qp_modify_qp,2);
 
 }
 
