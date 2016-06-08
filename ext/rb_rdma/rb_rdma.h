@@ -23,8 +23,10 @@ struct my_buffer {
   }
 
 #ifdef DEBUG
-  #define DEBUG_CMD(x) x
+  #define DEBUG_CMD(x) x;
+  #define TRACE_CMD() printf("func:%s %s:%d\n",__func__,__FILE__,__LINE__);
 #else
   #define DEBUG_CMD(x) 
+  #define TRACE_CMD() 
 #endif
 #endif

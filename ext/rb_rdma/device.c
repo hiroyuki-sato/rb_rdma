@@ -322,7 +322,8 @@ dev_attr_phys_port_cnt(VALUE self)
 
 void Init_device(){
 
-  DEBUG_CMD(printf("-----Init device\n"));
+  TRACE_CMD();
+
   cDevice = rb_define_class_under(mRbRDMA, "Device", rb_cData);
   rb_define_alloc_func(cDevice, device_s_alloc);
   rb_define_method(cDevice,"initialize", rdma_device_initialize,1);
