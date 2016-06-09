@@ -382,6 +382,29 @@ void Init_rb_rdma(){
 
 
 #endif 
+    // enum ibv_qp_attr_mask
+    rb_const_set(mRbRDMA, rb_intern("QP_STATE"), INT2FIX(IBV_QP_STATE));
+    rb_const_set(mRbRDMA, rb_intern("QP_CUR_STATE"), INT2FIX(IBV_QP_CUR_STATE));
+    rb_const_set(mRbRDMA, rb_intern("QP_EN_SQD_ASYNC_NOTIFY"), INT2FIX(IBV_QP_EN_SQD_ASYNC_NOTIFY));
+    rb_const_set(mRbRDMA, rb_intern("QP_ACCESS_FLAGS"), INT2FIX(IBV_QP_ACCESS_FLAGS));
+    rb_const_set(mRbRDMA, rb_intern("QP_PKEY_INDEX"), INT2FIX(IBV_QP_PKEY_INDEX));
+    rb_const_set(mRbRDMA, rb_intern("QP_PORT"), INT2FIX(IBV_QP_PORT));
+    rb_const_set(mRbRDMA, rb_intern("QP_QKEY"), INT2FIX(IBV_QP_QKEY));
+    rb_const_set(mRbRDMA, rb_intern("QP_AV"), INT2FIX(IBV_QP_AV));
+    rb_const_set(mRbRDMA, rb_intern("QP_PATH_MTU"), INT2FIX(IBV_QP_PATH_MTU));
+    rb_const_set(mRbRDMA, rb_intern("QP_TIMEOUT"), INT2FIX(IBV_QP_TIMEOUT));
+    rb_const_set(mRbRDMA, rb_intern("QP_RETRY_CNT"), INT2FIX(IBV_QP_RETRY_CNT));
+    rb_const_set(mRbRDMA, rb_intern("QP_RNR_RETRY"), INT2FIX(IBV_QP_RNR_RETRY));
+    rb_const_set(mRbRDMA, rb_intern("QP_RQ_PSN"), INT2FIX(IBV_QP_RQ_PSN));
+    rb_const_set(mRbRDMA, rb_intern("QP_MAX_QP_RD_ATOMIC"), INT2FIX(IBV_QP_MAX_QP_RD_ATOMIC));
+    rb_const_set(mRbRDMA, rb_intern("QP_ALT_PATH"), INT2FIX(IBV_QP_ALT_PATH));
+    rb_const_set(mRbRDMA, rb_intern("QP_MIN_RNR_TIMER"), INT2FIX(IBV_QP_MIN_RNR_TIMER));
+    rb_const_set(mRbRDMA, rb_intern("QP_SQ_PSN"), INT2FIX(IBV_QP_SQ_PSN));
+    rb_const_set(mRbRDMA, rb_intern("QP_MAX_DEST_RD_ATOMIC"), INT2FIX(IBV_QP_MAX_DEST_RD_ATOMIC));
+    rb_const_set(mRbRDMA, rb_intern("QP_PATH_MIG_STATE"), INT2FIX(IBV_QP_PATH_MIG_STATE));
+    rb_const_set(mRbRDMA, rb_intern("QP_CAP"), INT2FIX(IBV_QP_CAP));
+    rb_const_set(mRbRDMA, rb_intern("QP_DEST_QPN"), INT2FIX(IBV_QP_DEST_QPN));
+
 
   Init_context();
   Init_device();
