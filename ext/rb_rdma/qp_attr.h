@@ -1,6 +1,6 @@
 
 #if !defined(_RDMA_QP_ATTR_H_)
-# define _RDMA_PD_H_
+# define _RDMA_QP_ATTR_H_
 
 extern void Init_qp_attr();
 extern VALUE cQPAttr;
