@@ -3,6 +3,7 @@
 #include "cq.h"
 #include "qp.h"
 #include "mr.h"
+#include "qp_attr.h"
 
 VALUE cQP;
 
